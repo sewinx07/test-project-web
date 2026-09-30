@@ -3,11 +3,7 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 30,
-      "includeFiles": [
-        "FrontOffice/**",
-        "BackOffice/**",
-        "assets/**"
-      ]
+      "includeFiles": "{FrontOffice,BackOffice,assets}/**"
     }
   },
   "rewrites": [

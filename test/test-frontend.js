@@ -5,6 +5,18 @@
   const path = require('path');
 
   const ROOT = path.join(__dirname, '..');
+  const listFiles = (rel) => {
+    const out = [];
+    const walk = (r) => {
+      for (const e of fs.readdirSync(path.join(ROOT, r), { withFileTypes: true })) {
+        const child = `${r}/${e.name}`;
+        if (e.isDirectory()) walk(child);
+        else out.push(child);
+      }
+    };
+    walk(rel);
+    return out;
+  };
   const PAGES = [
     'FrontOffice/index.html',
     'FrontOffice/activites-liste.html',
@@ -124,9 +136,32 @@
   // "Cannot GET" for every page.
   console.log('\n== deployment config ==');
   const vercel = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
-  const included = vercel.functions?.['api/index.js']?.includeFiles || [];
+  const included = vercel.functions?.['api/index.js']?.includeFiles;
+  // Vercel's schema types this as a single glob string. An array here fails
+  // the build with "includeFiles should be string", so assert the type too.
+  ok('vercel includeFiles is a string', typeof included === 'string', JSON.stringify(included));
+  // Expand {a,b} into concrete globs and match real files, so a pattern that
+  // merely mentions the directory names cannot pass here.
+  const globs = typeof included === 'string'
+    ? (included.match(/\{([^{}]+)\}/)?.[1].split(',') || [''])
+      .map((alt) => included.replace(/\{[^{}]+\}/, alt))
+    : [];
+  // Single stars first, via asterisk-free sentinels for "**", otherwise the
+  // ".*" that "**" expands to is itself rewritten by the single-star pass.
+  const globsRe = globs.map((g) => new RegExp('^' + g
+    .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*\*/g, '\u0001\u0002')
+    .replace(/\*/g, '[^/]*')
+    .split('\u0001\u0002').join('.*') + '$'));
+  const matchesGlob = (rel) => globsRe.some((re) => re.test(rel));
   for (const dir of ['FrontOffice', 'BackOffice', 'assets']) {
-    ok(`vercel includeFiles ships ${dir}/`, included.some((g) => g.startsWith(`${dir}/`)), JSON.stringify(included));
+    const shipped = listFiles(dir).filter((f) => matchesGlob(f));
+    ok(`vercel includeFiles ships ${dir}/`, shipped.length > 0, `no ${dir} file matched ${included}`);
+    ok(`vercel includeFiles ships all of ${dir}/`,
+      shipped.length === listFiles(dir).length, `${shipped.length}/${listFiles(dir).length} matched`);
+  }
+  for (const bad of ['.env', 'package-lock.json', 'db.js']) {
+    ok(`vercel includeFiles does not ship ${bad}`, !matchesGlob(bad), bad);
   }
   ok('vercel rewrites non-api paths to the function',
     (vercel.rewrites || []).some((r) => r.source.includes('api') && r.destination === '/api'));
