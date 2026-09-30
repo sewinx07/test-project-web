@@ -34,34 +34,33 @@
 
         <main class="main-content" id="main">
 
+            <p class="form-feedback" id="detail-feedback" role="status" aria-live="polite" hidden></p>
+
             <div class="page-header">
-                <h1>Football</h1>
+                <h1 id="detail-title">Loading...</h1>
                 <div class="actions">
-                    <a class="btn btn-primary" href="activite-form.html">Edit</a>
+                    <a class="btn btn-primary" id="edit-link" href="activite-form.html">Edit</a>
+                    <button class="btn btn-danger" id="delete-btn" type="button">Delete</button>
                     <a class="btn btn-secondary" href="activites-liste.html">Back to List</a>
                 </div>
             </div>
 
             <div class="about-card">
 
-                <span class="icone" aria-hidden="true">&#9917;</span>
-                <p class="about-text">
-                    Weekly training sessions for all age groups. Sessions focus on technical
-                    skills, physical conditioning and team play, with friendly matches organised
-                    every month.
-                </p>
+                <span class="icone" id="detail-icon" aria-hidden="true">&#127947;</span>
+                <p class="about-text" id="detail-summary">Loading activity details...</p>
 
                 <div class="about-stats">
                     <div class="stat-card">
-                        <span class="stat-number">20</span>
+                        <span class="stat-number" id="stat-places">--</span>
                         <span class="stat-label">Places</span>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number">14</span>
+                        <span class="stat-number" id="stat-inscrits">--</span>
                         <span class="stat-label">Enrolled</span>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number">6</span>
+                        <span class="stat-number" id="stat-restantes">--</span>
                         <span class="stat-label">Available</span>
                     </div>
                 </div>
@@ -76,27 +75,8 @@
                             <th scope="col">Details</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Category</td>
-                            <td>Ball Sports</td>
-                        </tr>
-                        <tr>
-                            <td>Day</td>
-                            <td>Monday</td>
-                        </tr>
-                        <tr>
-                            <td>Time</td>
-                            <td>18:00</td>
-                        </tr>
-                        <tr>
-                            <td>Fee (per month)</td>
-                            <td>25.00</td>
-                        </tr>
-                        <tr>
-                            <td>Number of Places</td>
-                            <td>20</td>
-                        </tr>
+                    <tbody id="detail-fields">
+                        <tr class="table-empty" data-loading><td colspan="2">Loading activity details...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -109,31 +89,12 @@
                         <tr>
                             <th scope="col">Member</th>
                             <th scope="col">Email</th>
+                            <th scope="col">Status</th>
                             <th scope="col" class="actions-cell">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td><a href="adherent-detail.html">Amine Trabelsi</a></td>
-                            <td>amine.trabelsi@email.tn</td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="adherent-detail.html">Sara Ben Salah</a></td>
-                            <td>sara.bensalah@email.tn</td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="adherent-detail.html">Yassine Kacem</a></td>
-                            <td>yassine.kacem@email.tn</td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
-                            </td>
-                        </tr>
+                    <tbody id="detail-members">
+                        <tr class="table-empty" data-loading><td colspan="4">Loading members...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -141,6 +102,9 @@
         </main>
 
     </div>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/activite-detail.js"></script>
 
 </body>
 </html>

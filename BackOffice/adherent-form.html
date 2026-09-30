@@ -35,13 +35,13 @@
         <main class="main-content" id="main">
 
             <div class="page-header">
-                <h1>Member Form</h1>
+                <h1 id="form-title">Member Form</h1>
                 <div class="actions">
                     <a class="btn btn-secondary" href="adherents-liste.html">Cancel</a>
                 </div>
             </div>
 
-            <form class="form-card" action="#" method="POST">
+            <form class="form-card" id="adherent-form" action="#" method="POST" novalidate>
 
                 <input type="hidden" id="id" name="id">
 
@@ -55,7 +55,7 @@
                             required
                             minlength="2"
                             maxlength="50"
-                            pattern="[A-Za-zÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬-ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¿ ]+"
+                            pattern="[A-Za-z&#192;&#255;' -]+"
                             title="The first name must contain between 2 and 50 letters.">
                     </div>
 
@@ -68,7 +68,7 @@
                             required
                             minlength="2"
                             maxlength="50"
-                            pattern="[A-Za-zÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬-ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¿ ]+"
+                            pattern="[A-Za-z&#192;&#255;' -]+"
                             title="The last name must contain between 2 and 50 letters.">
                     </div>
                 </div>
@@ -107,8 +107,14 @@
                             id="date_naissance"
                             name="date_naissance"
                             required
-                            max="2008-12-31"
                             title="Members must be at least 16 years old.">
+                    </div>
+
+                    <div class="field">
+                        <label for="activite_id">Activity</label>
+                        <select id="activite_id" name="activite_id">
+                            <option value="">-- No activity --</option>
+                        </select>
                     </div>
 
                     <div class="field">
@@ -134,9 +140,11 @@
                         title="The address must contain between 5 and 120 characters.">
                 </div>
 
+                <p class="form-feedback" id="form-feedback" role="status" aria-live="polite" hidden></p>
+
                 <div class="form-actions">
                     <input type="reset" value="Reset">
-                    <input type="submit" value="Save Member">
+                    <input type="submit" id="submit-btn" value="Save Member">
                 </div>
 
             </form>
@@ -144,6 +152,9 @@
         </main>
 
     </div>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/adherent-form.js"></script>
 
 </body>
 </html>

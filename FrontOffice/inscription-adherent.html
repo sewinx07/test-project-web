@@ -38,7 +38,7 @@
                     <h1>Member Registration</h1>
                 </div>
 
-                <form class="form-card form-narrow" action="#" method="POST">
+                <form class="form-card form-narrow" id="registration-form" action="#" method="POST" novalidate>
 
                     <div class="form-row">
                         <div class="field">
@@ -50,7 +50,7 @@
                                 required
                                 minlength="2"
                                 maxlength="50"
-                                pattern="[A-Za-zÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬-ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿ ]+"
+                                pattern="[A-Za-z&#192;&#255;' -]+"
                                 title="The first name must contain between 2 and 50 letters.">
                         </div>
 
@@ -63,7 +63,7 @@
                                 required
                                 minlength="2"
                                 maxlength="50"
-                                pattern="[A-Za-zÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬-ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿ ]+"
+                                pattern="[A-Za-z&#192;&#255;' -]+"
                                 title="The last name must contain between 2 and 50 letters.">
                         </div>
                     </div>
@@ -102,21 +102,15 @@
                                 id="date_naissance"
                                 name="date_naissance"
                                 required
-                                max="2008-12-31"
                                 title="Members must be at least 16 years old.">
                         </div>
 
                         <div class="field">
-                            <label for="activite">Activity</label>
-                            <select id="activite" name="activite" required>
+                            <label for="activite_id">Activity</label>
+                            <select id="activite_id" name="activite_id" required>
                                 <option value="">-- Choose an activity --</option>
-                                <option value="football">Football</option>
-                                <option value="natation">Swimming</option>
-                                <option value="fitness">Fitness</option>
-                                <option value="tennis">Tennis</option>
-                                <option value="yoga">Yoga</option>
-                                <option value="basket">Basketball</option>
                             </select>
+                            <p class="field-hint" id="activite_hint">Loading available activities...</p>
                         </div>
                     </div>
 
@@ -139,9 +133,11 @@
                         </label>
                     </div>
 
+                    <p class="form-feedback" id="form-feedback" role="status" aria-live="polite" hidden></p>
+
                     <div class="form-actions">
                         <input type="reset" value="Reset">
-                        <input type="submit" value="Submit Registration">
+                        <input type="submit" id="submit-btn" value="Submit Registration">
                     </div>
 
                 </form>
@@ -166,6 +162,9 @@
             <p class="footer-bottom">&copy; 2026 Sports Club - All rights reserved.</p>
         </div>
     </footer>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/inscription.js"></script>
 
 </body>
 </html>

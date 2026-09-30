@@ -1,0 +1,21 @@
+{
+  "name": "sports-club-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sports club front office and back office with a node:sqlite API.",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/test-api.js && node test/test-frontend.js && node test/test-migration.js",
+    "test:api": "node test/test-api.js",
+    "test:frontend": "node test/test-frontend.js",
+    "test:migration": "node test/test-migration.js",
+    "test:e2e": "node test/test-e2e.js",
+    "db:check": "node test/check-db.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

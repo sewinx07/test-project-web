@@ -41,6 +41,27 @@
                 </div>
             </div>
 
+            <div class="toolbar">
+                <div class="field">
+                    <label for="search">Search</label>
+                    <input type="search" id="search" placeholder="Name, email or activity">
+                </div>
+
+                <div class="field">
+                    <label for="filter-statut">Status</label>
+                    <select id="filter-statut">
+                        <option value="">All statuses</option>
+                        <option value="actif">Active</option>
+                        <option value="en_attente">Pending</option>
+                        <option value="suspendu">Suspended</option>
+                    </select>
+                </div>
+
+                <p class="toolbar-count" id="result-count" role="status" aria-live="polite"></p>
+            </div>
+
+            <p class="form-feedback" id="list-feedback" role="status" aria-live="polite" hidden></p>
+
             <div class="table-wrapper">
                 <table class="table-liste">
                     <thead>
@@ -54,66 +75,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><a href="adherent-detail.html">Amine Trabelsi</a></td>
-                            <td>amine.trabelsi@email.tn</td>
-                            <td>+216 20 111 222</td>
-                            <td>Football</td>
-                            <td><span class="badge badge-paye">Paid</span></td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="adherent-detail.html">Sara Ben Salah</a></td>
-                            <td>sara.bensalah@email.tn</td>
-                            <td>+216 20 333 444</td>
-                            <td>Swimming</td>
-                            <td><span class="badge badge-paye">Paid</span></td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="adherent-detail.html">Yassine Kacem</a></td>
-                            <td>yassine.kacem@email.tn</td>
-                            <td>+216 20 555 666</td>
-                            <td>Fitness</td>
-                            <td><span class="badge badge-attente">Pending</span></td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="adherent-detail.html">Ines Bouazizi</a></td>
-                            <td>ines.bouazizi@email.tn</td>
-                            <td>+216 20 777 888</td>
-                            <td>Yoga</td>
-                            <td><span class="badge badge-paye">Paid</span></td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="adherent-detail.html">Mehdi Jlassi</a></td>
-                            <td>mehdi.jlassi@email.tn</td>
-                            <td>+216 20 999 000</td>
-                            <td>Tennis</td>
-                            <td><span class="badge badge-danger">Overdue</span></td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="adherent-detail.html">Rania Mansouri</a></td>
-                            <td>rania.mansouri@email.tn</td>
-                            <td>+216 20 222 333</td>
-                            <td>Basketball</td>
-                            <td><span class="badge badge-neutral">Inactive</span></td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
-                            </td>
-                        </tr>
+                        <tr class="table-empty" data-loading><td colspan="6">Loading members...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -121,6 +83,9 @@
         </main>
 
     </div>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/adherents-liste.js"></script>
 
 </body>
 </html>

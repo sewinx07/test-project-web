@@ -34,20 +34,21 @@
 
         <main class="main-content" id="main">
 
+            <p class="form-feedback" id="detail-feedback" role="status" aria-live="polite" hidden></p>
+
             <div class="page-header">
-                <h1>Amine Trabelsi</h1>
+                <h1 id="detail-title">Loading...</h1>
                 <div class="actions">
-                    <a class="btn btn-primary" href="adherent-form.html">Edit</a>
+                    <a class="btn btn-primary" id="edit-link" href="adherent-form.html">Edit</a>
+                    <button class="btn btn-danger" id="delete-btn" type="button">Delete</button>
                     <a class="btn btn-secondary" href="adherents-liste.html">Back to List</a>
                 </div>
             </div>
 
             <div class="about-card">
-                <span class="eyebrow">Member #1</span>
-                <p class="about-text">
-                    Registered since January 2026. Member in good standing, fees paid on time.
-                </p>
-                <span class="badge badge-paye">Paid</span>
+                <span class="eyebrow" id="detail-eyebrow">Member</span>
+                <p class="about-text" id="detail-summary">Loading member profile...</p>
+                <span id="detail-badges"></span>
             </div>
 
             <div class="table-wrapper">
@@ -58,36 +59,13 @@
                             <th scope="col">Details</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>First Name</td>
-                            <td>Amine</td>
-                        </tr>
-                        <tr>
-                            <td>Last Name</td>
-                            <td>Trabelsi</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>amine.trabelsi@email.tn</td>
-                        </tr>
-                        <tr>
-                            <td>Phone</td>
-                            <td>+216 20 111 222</td>
-                        </tr>
-                        <tr>
-                            <td>Date of Birth</td>
-                            <td>1998-04-12</td>
-                        </tr>
-                        <tr>
-                            <td>Address</td>
-                            <td>12 Avenue de la Liberte, Tunis</td>
-                        </tr>
+                    <tbody id="detail-fields">
+                        <tr class="table-empty" data-loading><td colspan="2">Loading member details...</td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <h2 class="section-title">Registrations</h2>
+            <h2 class="section-title">Activity</h2>
 
             <div class="table-wrapper">
                 <table class="table-inscrits">
@@ -100,25 +78,8 @@
                             <th scope="col" class="actions-cell">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td><a href="activite-detail.html">Football</a></td>
-                            <td>Monday</td>
-                            <td class="num">25.00</td>
-                            <td><span class="badge badge-paye">Paid</span></td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="activite-detail.html">View</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><a href="activite-detail.html">Fitness</a></td>
-                            <td>Wednesday</td>
-                            <td class="num">40.00</td>
-                            <td><span class="badge badge-attente">Pending</span></td>
-                            <td class="actions-cell">
-                                <a class="btn btn-sm btn-secondary" href="activite-detail.html">View</a>
-                            </td>
-                        </tr>
+                    <tbody id="detail-activity">
+                        <tr class="table-empty" data-loading><td colspan="5">Loading activity...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -126,6 +87,9 @@
         </main>
 
     </div>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/adherent-detail.js"></script>
 
 </body>
 </html>

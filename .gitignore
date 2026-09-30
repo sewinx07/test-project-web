@@ -1,0 +1,14 @@
+node_modules/
+
+# Generated databases (recreated and seeded on first run)
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Server output
+e2e-server.log
+e2e-server.err
+
+.env
