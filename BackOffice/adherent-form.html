@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Back office - create or edit a club member record.">
+    <title>Sports Club - Back Office - Member Form</title>
+    <link rel="icon" type="image/png" href="../assets/img/icon.png">
+    <meta name="theme-color" content="#1A56DB">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="backoffice-layout">
+
+        <aside class="sidebar">
+            <span class="sidebar-brand">Sports Club - Back Office</span>
+
+            <nav aria-label="Back office">
+                <ul class="sidebar-nav">
+                    <li><a href="activites-liste.html">Activities</a></li>
+                    <li><a href="activite-form.html">New Activity</a></li>
+                    <li><a href="adherents-liste.html">Members</a></li>
+                    <li><a href="adherent-form.html" aria-current="page">New Member</a></li>
+                </ul>
+            </nav>
+
+            <div class="mt-6">
+                <a class="btn btn-secondary btn-block" href="../FrontOffice/index.html">View Website</a>
+            </div>
+        </aside>
+
+        <main class="main-content" id="main">
+
+            <div class="page-header">
+                <h1>Member Form</h1>
+                <div class="actions">
+                    <a class="btn btn-secondary" href="adherents-liste.html">Cancel</a>
+                </div>
+            </div>
+
+            <form class="form-card" action="#" method="POST">
+
+                <input type="hidden" id="id" name="id">
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="prenom">First Name</label>
+                        <input
+                            type="text"
+                            id="prenom"
+                            name="prenom"
+                            required
+                            minlength="2"
+                            maxlength="50"
+                            pattern="[A-Za-zÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬-ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¿ ]+"
+                            title="The first name must contain between 2 and 50 letters.">
+                    </div>
+
+                    <div class="field">
+                        <label for="nom">Last Name</label>
+                        <input
+                            type="text"
+                            id="nom"
+                            name="nom"
+                            required
+                            minlength="2"
+                            maxlength="50"
+                            pattern="[A-Za-zÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬-ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¿ ]+"
+                            title="The last name must contain between 2 and 50 letters.">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                            maxlength="120"
+                            placeholder="name@example.com"
+                            title="Please enter a valid email address.">
+                    </div>
+
+                    <div class="field">
+                        <label for="telephone">Phone</label>
+                        <input
+                            type="tel"
+                            id="telephone"
+                            name="telephone"
+                            required
+                            pattern="[0-9+ ]{8,15}"
+                            placeholder="+216 70 000 000"
+                            title="The phone number must contain between 8 and 15 digits.">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="date_naissance">Date of Birth</label>
+                        <input
+                            type="date"
+                            id="date_naissance"
+                            name="date_naissance"
+                            required
+                            max="2008-12-31"
+                            title="Members must be at least 16 years old.">
+                    </div>
+
+                    <div class="field">
+                        <label for="statut">Membership Status</label>
+                        <select id="statut" name="statut" required>
+                            <option value="">-- Choose a status --</option>
+                            <option value="actif">Active</option>
+                            <option value="en_attente">Pending</option>
+                            <option value="suspendu">Suspended</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="adresse">Address</label>
+                    <input
+                        type="text"
+                        id="adresse"
+                        name="adresse"
+                        required
+                        minlength="5"
+                        maxlength="120"
+                        title="The address must contain between 5 and 120 characters.">
+                </div>
+
+                <div class="form-actions">
+                    <input type="reset" value="Reset">
+                    <input type="submit" value="Save Member">
+                </div>
+
+            </form>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Back office - list and manage club members and their registration status.">
+    <title>Sports Club - Back Office - Members</title>
+    <link rel="icon" type="image/png" href="../assets/img/icon.png">
+    <meta name="theme-color" content="#1A56DB">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="backoffice-layout">
+
+        <aside class="sidebar">
+            <span class="sidebar-brand">Sports Club - Back Office</span>
+
+            <nav aria-label="Back office">
+                <ul class="sidebar-nav">
+                    <li><a href="activites-liste.html">Activities</a></li>
+                    <li><a href="activite-form.html">New Activity</a></li>
+                    <li><a href="adherents-liste.html" aria-current="page">Members</a></li>
+                    <li><a href="adherent-form.html">New Member</a></li>
+                </ul>
+            </nav>
+
+            <div class="mt-6">
+                <a class="btn btn-secondary btn-block" href="../FrontOffice/index.html">View Website</a>
+            </div>
+        </aside>
+
+        <main class="main-content" id="main">
+
+            <div class="page-header">
+                <h1>Members</h1>
+                <div class="actions">
+                    <a class="btn btn-primary" href="adherent-form.html">New Member</a>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="table-liste">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col">Activity</th>
+                            <th scope="col">Fee</th>
+                            <th scope="col" class="actions-cell">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="adherent-detail.html">Amine Trabelsi</a></td>
+                            <td>amine.trabelsi@email.tn</td>
+                            <td>+216 20 111 222</td>
+                            <td>Football</td>
+                            <td><span class="badge badge-paye">Paid</span></td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="adherent-detail.html">Sara Ben Salah</a></td>
+                            <td>sara.bensalah@email.tn</td>
+                            <td>+216 20 333 444</td>
+                            <td>Swimming</td>
+                            <td><span class="badge badge-paye">Paid</span></td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="adherent-detail.html">Yassine Kacem</a></td>
+                            <td>yassine.kacem@email.tn</td>
+                            <td>+216 20 555 666</td>
+                            <td>Fitness</td>
+                            <td><span class="badge badge-attente">Pending</span></td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="adherent-detail.html">Ines Bouazizi</a></td>
+                            <td>ines.bouazizi@email.tn</td>
+                            <td>+216 20 777 888</td>
+                            <td>Yoga</td>
+                            <td><span class="badge badge-paye">Paid</span></td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="adherent-detail.html">Mehdi Jlassi</a></td>
+                            <td>mehdi.jlassi@email.tn</td>
+                            <td>+216 20 999 000</td>
+                            <td>Tennis</td>
+                            <td><span class="badge badge-danger">Overdue</span></td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="adherent-detail.html">Rania Mansouri</a></td>
+                            <td>rania.mansouri@email.tn</td>
+                            <td>+216 20 222 333</td>
+                            <td>Basketball</td>
+                            <td><span class="badge badge-neutral">Inactive</span></td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

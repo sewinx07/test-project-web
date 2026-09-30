@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Back office - activity details, weekly schedule, fees and registrations.">
+    <title>Sports Club - Back Office - Activity Detail</title>
+    <link rel="icon" type="image/png" href="../assets/img/icon.png">
+    <meta name="theme-color" content="#1A56DB">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="backoffice-layout">
+
+        <aside class="sidebar">
+            <span class="sidebar-brand">Sports Club - Back Office</span>
+
+            <nav aria-label="Back office">
+                <ul class="sidebar-nav">
+                    <li><a href="activites-liste.html" aria-current="page">Activities</a></li>
+                    <li><a href="activite-form.html">New Activity</a></li>
+                    <li><a href="adherents-liste.html">Members</a></li>
+                    <li><a href="adherent-form.html">New Member</a></li>
+                </ul>
+            </nav>
+
+            <div class="mt-6">
+                <a class="btn btn-secondary btn-block" href="../FrontOffice/index.html">View Website</a>
+            </div>
+        </aside>
+
+        <main class="main-content" id="main">
+
+            <div class="page-header">
+                <h1>Football</h1>
+                <div class="actions">
+                    <a class="btn btn-primary" href="activite-form.html">Edit</a>
+                    <a class="btn btn-secondary" href="activites-liste.html">Back to List</a>
+                </div>
+            </div>
+
+            <div class="about-card">
+
+                <span class="icone" aria-hidden="true">&#9917;</span>
+                <p class="about-text">
+                    Weekly training sessions for all age groups. Sessions focus on technical
+                    skills, physical conditioning and team play, with friendly matches organised
+                    every month.
+                </p>
+
+                <div class="about-stats">
+                    <div class="stat-card">
+                        <span class="stat-number">20</span>
+                        <span class="stat-label">Places</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">14</span>
+                        <span class="stat-label">Enrolled</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">6</span>
+                        <span class="stat-label">Available</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="table-wrapper">
+                <table class="table-liste">
+                    <thead>
+                        <tr>
+                            <th scope="col">Information</th>
+                            <th scope="col">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Category</td>
+                            <td>Ball Sports</td>
+                        </tr>
+                        <tr>
+                            <td>Day</td>
+                            <td>Monday</td>
+                        </tr>
+                        <tr>
+                            <td>Time</td>
+                            <td>18:00</td>
+                        </tr>
+                        <tr>
+                            <td>Fee (per month)</td>
+                            <td>25.00</td>
+                        </tr>
+                        <tr>
+                            <td>Number of Places</td>
+                            <td>20</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="section-title">Enrolled Members</h2>
+
+            <div class="table-wrapper">
+                <table class="table-inscrits">
+                    <thead>
+                        <tr>
+                            <th scope="col">Member</th>
+                            <th scope="col">Email</th>
+                            <th scope="col" class="actions-cell">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="adherent-detail.html">Amine Trabelsi</a></td>
+                            <td>amine.trabelsi@email.tn</td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="adherent-detail.html">Sara Ben Salah</a></td>
+                            <td>sara.bensalah@email.tn</td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="adherent-detail.html">Yassine Kacem</a></td>
+                            <td>yassine.kacem@email.tn</td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="adherent-detail.html">View</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

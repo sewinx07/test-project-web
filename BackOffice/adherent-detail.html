@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Back office - member profile, contact details and activity registrations.">
+    <title>Sports Club - Back Office - Member Detail</title>
+    <link rel="icon" type="image/png" href="../assets/img/icon.png">
+    <meta name="theme-color" content="#1A56DB">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="backoffice-layout">
+
+        <aside class="sidebar">
+            <span class="sidebar-brand">Sports Club - Back Office</span>
+
+            <nav aria-label="Back office">
+                <ul class="sidebar-nav">
+                    <li><a href="activites-liste.html">Activities</a></li>
+                    <li><a href="activite-form.html">New Activity</a></li>
+                    <li><a href="adherents-liste.html" aria-current="page">Members</a></li>
+                    <li><a href="adherent-form.html">New Member</a></li>
+                </ul>
+            </nav>
+
+            <div class="mt-6">
+                <a class="btn btn-secondary btn-block" href="../FrontOffice/index.html">View Website</a>
+            </div>
+        </aside>
+
+        <main class="main-content" id="main">
+
+            <div class="page-header">
+                <h1>Amine Trabelsi</h1>
+                <div class="actions">
+                    <a class="btn btn-primary" href="adherent-form.html">Edit</a>
+                    <a class="btn btn-secondary" href="adherents-liste.html">Back to List</a>
+                </div>
+            </div>
+
+            <div class="about-card">
+                <span class="eyebrow">Member #1</span>
+                <p class="about-text">
+                    Registered since January 2026. Member in good standing, fees paid on time.
+                </p>
+                <span class="badge badge-paye">Paid</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="table-liste">
+                    <thead>
+                        <tr>
+                            <th scope="col">Information</th>
+                            <th scope="col">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>First Name</td>
+                            <td>Amine</td>
+                        </tr>
+                        <tr>
+                            <td>Last Name</td>
+                            <td>Trabelsi</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>amine.trabelsi@email.tn</td>
+                        </tr>
+                        <tr>
+                            <td>Phone</td>
+                            <td>+216 20 111 222</td>
+                        </tr>
+                        <tr>
+                            <td>Date of Birth</td>
+                            <td>1998-04-12</td>
+                        </tr>
+                        <tr>
+                            <td>Address</td>
+                            <td>12 Avenue de la Liberte, Tunis</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="section-title">Registrations</h2>
+
+            <div class="table-wrapper">
+                <table class="table-inscrits">
+                    <thead>
+                        <tr>
+                            <th scope="col">Activity</th>
+                            <th scope="col">Day</th>
+                            <th scope="col" class="num">Fee</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="actions-cell">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="activite-detail.html">Football</a></td>
+                            <td>Monday</td>
+                            <td class="num">25.00</td>
+                            <td><span class="badge badge-paye">Paid</span></td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="activite-detail.html">View</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="activite-detail.html">Fitness</a></td>
+                            <td>Wednesday</td>
+                            <td class="num">40.00</td>
+                            <td><span class="badge badge-attente">Pending</span></td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-secondary" href="activite-detail.html">View</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

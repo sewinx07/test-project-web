@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Back office - create or edit a club activity.">
+    <title>Sports Club - Back Office - Activity Form</title>
+    <link rel="icon" type="image/png" href="../assets/img/icon.png">
+    <meta name="theme-color" content="#1A56DB">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="backoffice-layout">
+
+        <aside class="sidebar">
+            <span class="sidebar-brand">Sports Club - Back Office</span>
+
+            <nav aria-label="Back office">
+                <ul class="sidebar-nav">
+                    <li><a href="activites-liste.html" aria-current="page">Activities</a></li>
+                    <li><a href="activite-form.html">New Activity</a></li>
+                    <li><a href="adherents-liste.html">Members</a></li>
+                    <li><a href="adherent-form.html">New Member</a></li>
+                </ul>
+            </nav>
+
+            <div class="mt-6">
+                <a class="btn btn-secondary btn-block" href="../FrontOffice/index.html">View Website</a>
+            </div>
+        </aside>
+
+        <main class="main-content" id="main">
+
+            <div class="page-header">
+                <h1>Activity Form</h1>
+                <div class="actions">
+                    <a class="btn btn-secondary" href="activites-liste.html">Cancel</a>
+                </div>
+            </div>
+
+            <form class="form-card" action="#" method="POST">
+
+                <input type="hidden" id="id" name="id">
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="nom_activite">Activity Name</label>
+                        <input
+                            type="text"
+                            id="nom_activite"
+                            name="nom_activite"
+                            required
+                            minlength="3"
+                            maxlength="50"
+                            pattern="[A-Za-zÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬-ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¿0-9 ]+"
+                            placeholder="Football"
+                            title="The name must contain between 3 and 50 characters and only letters, numbers, and spaces.">
+                    </div>
+
+                    <div class="field">
+                        <label for="categorie">Category</label>
+                        <select id="categorie" name="categorie" required>
+                            <option value="">-- Choose a category --</option>
+                            <option value="ballon">Ball Sports</option>
+                            <option value="eau">Water Sports</option>
+                            <option value="individuel">Individual Sports</option>
+                            <option value="bien-etre">Well-being</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="description">Description</label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="5"
+                        required
+                        maxlength="300"
+                        placeholder="Describe the activity (300 characters maximum)."
+                        title="The description is required and must not exceed 300 characters."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="jour">Day</label>
+                        <select id="jour" name="jour" required>
+                            <option value="">-- Choose a day --</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="horaire">Time</label>
+                        <input
+                            type="time"
+                            id="horaire"
+                            name="horaire"
+                            required
+                            title="Please choose the starting time.">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="tarif">Fee (per month)</label>
+                        <input
+                            type="number"
+                            id="tarif"
+                            name="tarif"
+                            required
+                            min="0"
+                            max="1000"
+                            step="0.01"
+                            placeholder="0.00"
+                            title="The fee must be between 0 and 1000.">
+                    </div>
+
+                    <div class="field">
+                        <label for="places">Number of Places</label>
+                        <input
+                            type="number"
+                            id="places"
+                            name="places"
+                            required
+                            min="1"
+                            max="200"
+                            step="1"
+                            title="The number of places must be between 1 and 200.">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <input type="reset" value="Reset">
+                    <input type="submit" value="Save Activity">
+                </div>
+
+            </form>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
