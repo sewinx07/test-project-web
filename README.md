@@ -1,19 +1,31 @@
 # Sports Club
 
 Front office and back office for a sports club, backed by an Express JSON API and
-SQLite through Node's built-in `node:sqlite` driver.
+PostgreSQL.
 
 ## Requirements
 
-- Node.js **22.5.0 or newer** (uses the built-in `node:sqlite` module, no native compilation).
+- Node.js **22 or newer** (the npm scripts use `--env-file-if-exists`).
   Developed and tested on Node 24.21.0.
-- No external database server. The database file is created and seeded on first run.
+- A reachable PostgreSQL database and its connection string. Works with any
+  Postgres host; the project is set up against a Neon project.
 
 ## Install
 
 ```bash
 npm install
 ```
+
+## Configure
+
+Copy the template and fill in your connection string:
+
+```bash
+cp .env.example .env      # Windows: copy .env.example .env
+```
+
+`.env` is read automatically by the npm scripts. On Vercel, set the same value as an
+environment variable named `DATABASE_URL` instead — do not commit a `.env` file.
 
 ## Run
 
@@ -22,12 +34,20 @@ npm start
 ```
 
 Then open <http://localhost:3000>. The root redirects to the front office home page.
+The schema is created and seeded automatically on the first request.
 
-Set `PORT` to use a different port and `DB_PATH` to point at a different database file:
+Apply the schema ahead of time with `npm run db:migrate`, and inspect the result with
+`npm run db:check`.
 
-```bash
-PORT=8080 DB_PATH=./data/club.db npm start
-```
+## Deploying to Vercel
+
+`vercel.json` and `api/index.js` deploy the app as a single serverless function. Set
+`DATABASE_URL` in **Project Settings → Environment Variables** for all environments.
+No filesystem state is required, so the function is stateless across cold starts.
+
+Why a hosted database is required: the previous version stored data in a local SQLite
+file. Vercel mounts a deployment read-only and runs each invocation in a fresh
+sandbox, so a file-backed database cannot work there.
 
 ## Pages
 
@@ -58,6 +78,13 @@ adherents ──activite_id──▶ activites
                     activite_aliases (legacy slug mapping)
 ```
 
+| Table | Purpose |
+| --- | --- |
+| `activites` | Activity catalogue, seeded with six rows |
+| `adherents` | Members, each linked to at most one activity |
+| `activite_aliases` | Maps historical slugs onto current activity ids |
+| `schema_migrations` | Applied schema version |
+
 ### Seed activities
 
 | Activity | Category | Day | Time | Fee | Places |
@@ -71,16 +98,22 @@ adherents ──activite_id──▶ activites
 
 ### Migration from the legacy schema
 
-The first boot upgrades an older database that stored the activity as free text in
+The first run upgrades an older database that stored the activity as free text in
 `adherents.activite`. The value is normalised to a slug and resolved to an
 `activite_id` through `activite_aliases`, which maps the old French slugs
 (`natation` → `swimming`, `basket` → `basketball`). Rows whose activity no longer
-exists are kept with `activite_id = NULL` rather than dropped. The migration is
-recorded in `PRAGMA user_version` and is safe to re-run.
+exists are kept with `activite_id = NULL` rather than dropped, and member ids and
+statuses are preserved. The version is recorded in `schema_migrations` and the
+migration is safe to re-run.
+
+Migrations run inside a transaction and take a table lock, so two cold starts racing
+on a fresh database cannot both seed.
 
 ## API
 
 All responses are JSON. Errors return `{ "errors": ["..."] }` with a 4xx status.
+If the database is unreachable, `/api/*` returns `503` while the static pages keep
+serving normally.
 
 ### Activities
 
@@ -122,28 +155,31 @@ Do not expose it to the internet as-is.
 
 ## Tests
 
-```bash
-npm test              # API + frontend/markup + migration
-npm run test:api
-npm run test:frontend
-npm run test:migration
-npm run db:check      # fresh-database smoke test
-```
-
-The end-to-end suite needs a running server, so start one on a throwaway database
-first:
+`test/test-frontend.js` is static analysis and needs nothing but the repository.
+The remaining suites **truncate the database in `DATABASE_URL`**, so they refuse to
+run unless you opt in and point at a scratch database:
 
 ```bash
-DB_PATH=./e2e.db PORT=3210 node server.js &
-E2E_PORT=3210 node test/test-e2e.js
+ALLOW_DB_TESTS=1 DATABASE_URL="<scratch url>" npm test
 ```
+
+| Command | Covers |
+| --- | --- |
+| `npm test` | API + markup + migration |
+| `npm run test:api` | CRUD, validation, constraint handling |
+| `npm run test:frontend` | Markup, script wiring, stylesheet (no database) |
+| `npm run test:migration` | Legacy free-text activity upgrade and idempotency |
+| `npm run test:e2e` | Boots a real server and drives the full user flow |
 
 ## Layout
 
 ```
 server.js          Express app: API routes, static files, error handling
-db.js              node:sqlite connection, schema, seed data, migration
-test/              Test suites
+db.js              Postgres pool, schema, seed data, migration
+api/index.js       Vercel serverless entry point
+vercel.json        Rewrites every non-API path to the function
+scripts/           migrate.js, check-db.js
+test/              Test suites and the shared harness
 assets/css/        Single stylesheet, comment-free
 assets/js/         Shared helpers plus one script per dynamic page
 FrontOffice/       Public pages

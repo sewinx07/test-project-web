@@ -1,18 +1,18 @@
 const express = require('express');
 const path = require('path');
-const db = require('./db');
-const { CATEGORIES, DAYS, STATUSES, toSlug } = require('./db');
+const { init, one, query, run, CATEGORIES, DAYS, STATUSES, toSlug } = require('./db');
 
 const app = express();
 app.use(express.json());
 
-const SQLITE_CONSTRAINT_UNIQUE = 2067;
-const SQLITE_CONSTRAINT_FOREIGNKEY = 787;
-const SQLITE_CONSTRAINT_CHECK = 275;
-const SQLITE_CONSTRAINT_NOTNULL = 1299;
-const SQLITE_CONSTRAINT_PRIMARYKEY = 1555;
+const PG_UNIQUE = '23505';
+const PG_FOREIGN_KEY = '23503';
+const PG_CHECK = '23514';
+const PG_NOT_NULL = '23502';
 
-const isUniqueViolation = (e) => e.errcode === SQLITE_CONSTRAINT_UNIQUE || /UNIQUE constraint/i.test(e.message || '');
+const isUniqueViolation = (e) => e.code === PG_UNIQUE;
+const isForeignKeyViolation = (e) => e.code === PG_FOREIGN_KEY;
+const isCheckViolation = (e) => e.code === PG_CHECK;
 
 const NAME_RE = /^[A-Za-zÀ-ÿ' -]{2,50}$/;
 const PHONE_RE = /^[0-9+ ]{8,15}$/;
@@ -40,60 +40,67 @@ function minimumAgeDate(years) {
   return d;
 }
 
-const stmt = {
-  listActivites: db.prepare(`
-    SELECT a.*,
-           (SELECT COUNT(*) FROM adherents h WHERE h.activite_id = a.id) AS inscrits,
-           a.places - (SELECT COUNT(*) FROM adherents h WHERE h.activite_id = a.id) AS places_restantes
+// API routes await init() so a cold serverless instance migrates on its
+// first request instead of writing to disk at import time. Static files are
+// deliberately excluded so a database outage cannot take the pages down.
+app.use('/api', async (req, res, next) => {
+  try {
+    await init();
+    next();
+  } catch (e) {
+    console.error('[db] initialisation failed:', e.message);
+    res.status(503).json({ errors: ['Database unavailable. Please try again shortly.'] });
+  }
+});
+
+const SQL = {
+  listActivites: `
+    SELECT a.*, a.tarif::float8 AS tarif,
+           (SELECT count(*) FROM adherents h WHERE h.activite_id = a.id)::int AS inscrits,
+           a.places - (SELECT count(*) FROM adherents h WHERE h.activite_id = a.id)::int AS places_restantes
     FROM activites a
-    ORDER BY a.nom_activite
-  `),
-  getActivite: db.prepare('SELECT * FROM activites WHERE id = ?'),
-  getActiviteBySlug: db.prepare('SELECT * FROM activites WHERE slug = ?'),
-  listAdherents: db.prepare(`
-    SELECT h.*, a.nom_activite, a.slug AS activite_slug, a.tarif, a.jour, a.horaire
+    ORDER BY a.nom_activite`,
+  getActivite: 'SELECT *, tarif::float8 AS tarif FROM activites WHERE id = $1',
+  getActiviteBySlug: 'SELECT id FROM activites WHERE slug = $1',
+  listAdherents: `
+    SELECT h.*, a.nom_activite, a.slug AS activite_slug,
+           a.tarif::float8 AS tarif, a.jour, a.horaire
     FROM adherents h
     LEFT JOIN activites a ON a.id = h.activite_id
-    ORDER BY h.id DESC
-  `),
-  getAdherent: db.prepare(`
-    SELECT h.*, a.nom_activite, a.slug AS activite_slug, a.tarif, a.jour, a.horaire
+    ORDER BY h.id DESC`,
+  getAdherent: `
+    SELECT h.*, a.nom_activite, a.slug AS activite_slug,
+           a.tarif::float8 AS tarif, a.jour, a.horaire
     FROM adherents h
     LEFT JOIN activites a ON a.id = h.activite_id
-    WHERE h.id = ?
-  `),
-  getAdherentsByActivite: db.prepare(`
+    WHERE h.id = $1`,
+  getAdherentsByActivite: `
     SELECT id, prenom, nom, email, telephone, statut
-    FROM adherents WHERE activite_id = ? ORDER BY nom, prenom
-  `),
-  countForActivite: db.prepare('SELECT COUNT(*) AS n FROM adherents WHERE activite_id = ?'),
-  activityExists: db.prepare('SELECT id FROM activites WHERE id = ?'),
-  insertAdherent: db.prepare(`
+    FROM adherents WHERE activite_id = $1 ORDER BY nom, prenom`,
+  countForActivite: 'SELECT count(*)::int AS n FROM adherents WHERE activite_id = $1',
+  activityExists: 'SELECT id FROM activites WHERE id = $1',
+  insertAdherent: `
     INSERT INTO adherents (prenom, nom, email, telephone, date_naissance, adresse, activite_id)
-    VALUES (@prenom, @nom, @email, @telephone, @date_naissance, @adresse, @activite_id)
-  `),
-  updateAdherent: db.prepare(`
+    VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+  updateAdherent: `
     UPDATE adherents
-    SET prenom = @prenom, nom = @nom, email = @email, telephone = @telephone,
-        date_naissance = @date_naissance, adresse = @adresse, statut = @statut
-    WHERE id = @id
-  `),
-  setAdherentActivite: db.prepare('UPDATE adherents SET activite_id = ? WHERE id = ?'),
-  deleteAdherent: db.prepare('DELETE FROM adherents WHERE id = ?'),
-  insertActivite: db.prepare(`
+    SET prenom = $1, nom = $2, email = $3, telephone = $4,
+        date_naissance = $5, adresse = $6, statut = $7
+    WHERE id = $8`,
+  setAdherentActivite: 'UPDATE adherents SET activite_id = $1 WHERE id = $2',
+  deleteAdherent: 'DELETE FROM adherents WHERE id = $1',
+  insertActivite: `
     INSERT INTO activites (nom_activite, slug, categorie, description, jour, horaire, tarif, places)
-    VALUES (@nom_activite, @slug, @categorie, @description, @jour, @horaire, @tarif, @places)
-  `),
-  updateActivite: db.prepare(`
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
+  updateActivite: `
     UPDATE activites
-    SET nom_activite = @nom_activite, categorie = @categorie, description = @description,
-        jour = @jour, horaire = @horaire, tarif = @tarif, places = @places
-    WHERE id = @id
-  `),
-  deleteActivite: db.prepare('DELETE FROM activites WHERE id = ?'),
+    SET nom_activite = $1, categorie = $2, description = $3,
+        jour = $4, horaire = $5, tarif = $6, places = $7
+    WHERE id = $8`,
+  deleteActivite: 'DELETE FROM activites WHERE id = $1',
 };
 
-function validateRegistration(b) {
+async function validateRegistration(b) {
   const errors = [];
   const data = {
     prenom: str(b.prenom),
@@ -113,7 +120,7 @@ function validateRegistration(b) {
 
   if (data.activite_id === null) {
     errors.push('Please choose an activity.');
-  } else if (!stmt.activityExists.get(data.activite_id)) {
+  } else if (!(await one(SQL.activityExists, [data.activite_id]))) {
     errors.push('Unknown activity.');
   }
 
@@ -195,44 +202,47 @@ app.get('/', (req, res) => res.redirect('/FrontOffice/index.html'));
 
 app.get(
   '/api/activites',
-  asyncRoute((req, res) => res.json(stmt.listActivites.all()))
+  asyncRoute(async (req, res) => res.json(await query(SQL.listActivites)))
 );
 
 app.get(
   '/api/activites/:id',
-  asyncRoute((req, res) => {
+  asyncRoute(async (req, res) => {
     const id = parseId(req.params.id);
     if (!id) return res.status(400).json({ errors: ['Invalid id.'] });
 
-    const activite = stmt.getActivite.get(id);
+    const activite = await one(SQL.getActivite, [id]);
     if (!activite) return res.status(404).json({ errors: ['Activity not found.'] });
 
-    const inscrits = stmt.countForActivite.get(id).n;
+    const inscrits = (await one(SQL.countForActivite, [id])).n;
     res.json({
       ...activite,
       inscrits,
       places_restantes: activite.places - inscrits,
-      membres: stmt.getAdherentsByActivite.all(id),
+      membres: await query(SQL.getAdherentsByActivite, [id]),
     });
   })
 );
 
 app.post(
   '/api/activites',
-  asyncRoute((req, res) => {
+  asyncRoute(async (req, res) => {
     const { data, errors } = validateActivite(req.body);
     if (errors.length) return res.status(400).json({ errors });
 
     const base = toSlug(data.nom_activite);
     let slug = base;
-    for (let n = 2; stmt.getActiviteBySlug.get(slug); n += 1) slug = `${base}-${n}`;
+    for (let n = 2; await one(SQL.getActiviteBySlug, [slug]); n += 1) slug = `${base}-${n}`;
 
     try {
-      const info = stmt.insertActivite.run({ ...data, slug });
-      res.status(201).json({ id: info.lastInsertRowid, slug });
+      const [created] = await query(
+        SQL.insertActivite,
+        [data.nom_activite, slug, data.categorie, data.description, data.jour, data.horaire, data.tarif, data.places]
+      );
+      res.status(201).json({ id: created.id, slug });
     } catch (e) {
       if (isUniqueViolation(e)) return res.status(409).json({ errors: ['This activity name already exists.'] });
-      if (e.errcode === SQLITE_CONSTRAINT_CHECK) return res.status(400).json({ errors: ['The activity values are out of range.'] });
+      if (isCheckViolation(e)) return res.status(400).json({ errors: ['The activity values are out of range.'] });
       throw e;
     }
   })
@@ -240,19 +250,19 @@ app.post(
 
 app.put(
   '/api/activites/:id',
-  asyncRoute((req, res) => {
+  asyncRoute(async (req, res) => {
     const id = parseId(req.params.id);
     if (!id) return res.status(400).json({ errors: ['Invalid id.'] });
-    if (!stmt.getActivite.get(id)) return res.status(404).json({ errors: ['Activity not found.'] });
+    if (!(await one(SQL.getActivite, [id]))) return res.status(404).json({ errors: ['Activity not found.'] });
 
     const { data, errors } = validateActivite(req.body);
     if (errors.length) return res.status(400).json({ errors });
 
     try {
-      stmt.updateActivite.run({ ...data, id });
+      await run(SQL.updateActivite, [data.nom_activite, data.categorie, data.description, data.jour, data.horaire, data.tarif, data.places, id]);
       res.json({ id });
     } catch (e) {
-      if (e.errcode === SQLITE_CONSTRAINT_CHECK) return res.status(400).json({ errors: ['The activity values are out of range.'] });
+      if (isCheckViolation(e)) return res.status(400).json({ errors: ['The activity values are out of range.'] });
       throw e;
     }
   })
@@ -260,18 +270,18 @@ app.put(
 
 app.delete(
   '/api/activites/:id',
-  asyncRoute((req, res) => {
+  asyncRoute(async (req, res) => {
     const id = parseId(req.params.id);
     if (!id) return res.status(400).json({ errors: ['Invalid id.'] });
-    if (!stmt.getActivite.get(id)) return res.status(404).json({ errors: ['Activity not found.'] });
+    if (!(await one(SQL.getActivite, [id]))) return res.status(404).json({ errors: ['Activity not found.'] });
 
-    const orphans = stmt.countForActivite.get(id).n;
+    const orphans = (await one(SQL.countForActivite, [id])).n;
 
     try {
-      stmt.deleteActivite.run(id);
+      await run(SQL.deleteActivite, [id]);
       res.json({ id, orphans });
     } catch (e) {
-      if (e.errcode === SQLITE_CONSTRAINT_FOREIGNKEY) {
+      if (isForeignKeyViolation(e)) {
         return res.status(409).json({ errors: ['Members are still assigned to this activity.'] });
       }
       throw e;
@@ -281,18 +291,20 @@ app.delete(
 
 app.post(
   '/api/adherents',
-  asyncRoute((req, res) => {
-    const { data, errors } = validateRegistration(req.body);
+  asyncRoute(async (req, res) => {
+    const { data, errors } = await validateRegistration(req.body);
     if (errors.length) return res.status(400).json({ errors });
 
     try {
-      const info = stmt.insertAdherent.run(data);
-      res.status(201).json({ id: info.lastInsertRowid, statut: 'en_attente' });
+      const [created] = await query(SQL.insertAdherent, [
+        data.prenom, data.nom, data.email, data.telephone, data.date_naissance, data.adresse, data.activite_id,
+      ]);
+      res.status(201).json({ id: created.id, statut: 'en_attente' });
     } catch (e) {
       if (isUniqueViolation(e)) {
         return res.status(409).json({ errors: ['This email is already registered.'] });
       }
-      if (e.errcode === SQLITE_CONSTRAINT_FOREIGNKEY) {
+      if (isForeignKeyViolation(e)) {
         return res.status(400).json({ errors: ['Unknown activity.'] });
       }
       throw e;
@@ -302,16 +314,16 @@ app.post(
 
 app.get(
   '/api/adherents',
-  asyncRoute((req, res) => res.json(stmt.listAdherents.all()))
+  asyncRoute(async (req, res) => res.json(await query(SQL.listAdherents)))
 );
 
 app.get(
   '/api/adherents/:id',
-  asyncRoute((req, res) => {
+  asyncRoute(async (req, res) => {
     const id = parseId(req.params.id);
     if (!id) return res.status(400).json({ errors: ['Invalid id.'] });
 
-    const adherent = stmt.getAdherent.get(id);
+    const adherent = await one(SQL.getAdherent, [id]);
     if (!adherent) return res.status(404).json({ errors: ['Member not found.'] });
     res.json(adherent);
   })
@@ -319,22 +331,22 @@ app.get(
 
 app.put(
   '/api/adherents/:id',
-  asyncRoute((req, res) => {
+  asyncRoute(async (req, res) => {
     const id = parseId(req.params.id);
     if (!id) return res.status(400).json({ errors: ['Invalid id.'] });
-    if (!stmt.getAdherent.get(id)) return res.status(404).json({ errors: ['Member not found.'] });
+    if (!(await one(SQL.getAdherent, [id]))) return res.status(404).json({ errors: ['Member not found.'] });
 
     const { data, errors } = validateAdherentAdmin(req.body);
     if (errors.length) return res.status(400).json({ errors });
 
     const activiteId = req.body.activite_id === '' || req.body.activite_id == null ? null : parseId(req.body.activite_id);
-    if (activiteId !== null && !stmt.activityExists.get(activiteId)) {
+    if (activiteId !== null && !(await one(SQL.activityExists, [activiteId]))) {
       return res.status(400).json({ errors: ['Unknown activity.'] });
     }
 
     try {
-      stmt.updateAdherent.run({ ...data, id });
-      stmt.setAdherentActivite.run(activiteId, id);
+      await run(SQL.updateAdherent, [data.prenom, data.nom, data.email, data.telephone, data.date_naissance, data.adresse, data.statut, id]);
+      await run(SQL.setAdherentActivite, [activiteId, id]);
       res.json({ id });
     } catch (e) {
       if (isUniqueViolation(e)) return res.status(409).json({ errors: ['This email is already registered.'] });
@@ -345,12 +357,12 @@ app.put(
 
 app.delete(
   '/api/adherents/:id',
-  asyncRoute((req, res) => {
+  asyncRoute(async (req, res) => {
     const id = parseId(req.params.id);
     if (!id) return res.status(400).json({ errors: ['Invalid id.'] });
-    if (!stmt.getAdherent.get(id)) return res.status(404).json({ errors: ['Member not found.'] });
+    if (!(await one(SQL.getAdherent, [id]))) return res.status(404).json({ errors: ['Member not found.'] });
 
-    stmt.deleteAdherent.run(id);
+    await run(SQL.deleteAdherent, [id]);
     res.json({ id });
   })
 );

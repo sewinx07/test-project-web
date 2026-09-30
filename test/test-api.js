@@ -1,18 +1,8 @@
-const path = require('path');
-const fs = require('fs');
+const { cleanDatabase, closeDatabase, createHarness } = require('./helpers');
 
-const dbPath = path.join(__dirname, '..', 'api-test.db');
-for (const f of [dbPath, `${dbPath}-wal`, `${dbPath}-shm`]) if (fs.existsSync(f)) fs.unlinkSync(f);
-process.env.DB_PATH = dbPath;
+const { ok, report } = createHarness();
 
 const app = require('../server');
-
-let pass = 0;
-let fail = 0;
-const ok = (name, cond, extra = '') => {
-  if (cond) { pass += 1; console.log(`  PASS  ${name}`); }
-  else { fail += 1; console.log(`  FAIL  ${name} ${extra}`); }
-};
 
 const server = app.listen(0);
 const base = () => `http://127.0.0.1:${server.address().port}`;
@@ -35,6 +25,8 @@ const validAdherent = {
 };
 
 (async () => {
+  await cleanDatabase();
+
   console.log('\n--- activities ---');
   let r = await api('GET', '/api/activites');
   ok('GET /api/activites 200', r.status === 200, r.status);
@@ -165,7 +157,11 @@ const validAdherent = {
   r = await api('GET', `/api/adherents/${otherId}`);
   ok('deleted member 404', r.status === 404, r.status);
 
-  console.log(`\n===== ${pass} passed, ${fail} failed =====\n`);
+  const failures = report();
   server.close();
-  process.exit(fail ? 1 : 0);
-})();
+  await closeDatabase();
+  process.exit(failures ? 1 : 0);
+})().catch((e) => {
+  console.error('\nTest run crashed:', e);
+  process.exit(1);
+});

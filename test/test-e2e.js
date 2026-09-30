@@ -1,18 +1,13 @@
 (function () {
   'use strict';
 
-  const base = `http://localhost:${process.env.E2E_PORT || 3210}`;
-  let pass = 0;
-  let fail = 0;
-  const ok = (label, cond, extra) => {
-    if (cond) {
-      pass += 1;
-      console.log(`  PASS  ${label}`);
-    } else {
-      fail += 1;
-      console.log(`  FAIL  ${label}${extra !== undefined ? ` -> ${extra}` : ''}`);
-    }
-  };
+  const { spawn } = require('child_process');
+  const path = require('path');
+  const { cleanDatabase, closeDatabase, createHarness, assertTestDatabaseAllowed } = require('./helpers');
+
+  const { ok, report } = createHarness();
+  const PORT = process.env.E2E_PORT || 3210;
+  const base = `http://127.0.0.1:${PORT}`;
 
   const call = async (method, url, body) => {
     const opts = { method };
@@ -28,8 +23,41 @@
     return { status: res.status, json };
   };
 
+  let child = null;
+
+  const startServer = () =>
+    new Promise((resolve, reject) => {
+      child = spawn(process.execPath, ['server.js'], {
+        cwd: path.join(__dirname, '..'),
+        env: { ...process.env, PORT: String(PORT) },
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      let settled = false;
+      const done = (err) => {
+        if (settled) return;
+        settled = true;
+        if (err) reject(err); else resolve();
+      };
+      child.stderr.on('data', (d) => process.stderr.write(`[server] ${d}`));
+      const deadline = setTimeout(() => done(new Error('server did not start in time')), 20_000);
+      const poll = setInterval(async () => {
+        try {
+          const res = await fetch(`${base}/api/activites`);
+          if (res.ok) {
+            clearTimeout(deadline);
+            clearInterval(poll);
+            done(null);
+          }
+        } catch { /* not up yet */ }
+      }, 250);
+    });
+
   (async () => {
-    console.log('== front office: activities available for registration ==');
+    assertTestDatabaseAllowed();
+    await cleanDatabase();
+    await startServer();
+
+    console.log('\n== front office: activities available for registration ==');
     let r = await call('GET', '/api/activites');
     ok('activities 200', r.status === 200, r.status);
     const acts = r.json;
@@ -197,7 +225,12 @@
       ok(`serves ${p}`, res.ok, res.status);
     }
 
-    console.log(`\n===== ${pass} passed, ${fail} failed =====`);
-    process.exit(fail ? 1 : 0);
-  })();
+    const failures = report();
+    child.kill();
+    closeDatabase().finally(() => process.exit(failures ? 1 : 0));
+  })().catch((e) => {
+    console.error('\nE2E run crashed:', e);
+    if (child) child.kill();
+    closeDatabase().finally(() => process.exit(1));
+  });
 })();
