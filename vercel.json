@@ -2,7 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "api/index.js": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "includeFiles": [
+        "FrontOffice/**",
+        "BackOffice/**",
+        "assets/**"
+      ]
     }
   },
   "rewrites": [

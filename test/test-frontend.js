@@ -119,6 +119,27 @@
     ok(`class .${cls} styled`, css.includes(`.${cls}`) || cls.startsWith('form-feedback--'), 'not in css');
   }
 
+  // Vercel only bundles files it can trace through require(). Nothing
+  // requires the HTML, so without includeFiles the deployed function serves
+  // "Cannot GET" for every page.
+  console.log('\n== deployment config ==');
+  const vercel = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
+  const included = vercel.functions?.['api/index.js']?.includeFiles || [];
+  for (const dir of ['FrontOffice', 'BackOffice', 'assets']) {
+    ok(`vercel includeFiles ships ${dir}/`, included.some((g) => g.startsWith(`${dir}/`)), JSON.stringify(included));
+  }
+  ok('vercel rewrites non-api paths to the function',
+    (vercel.rewrites || []).some((r) => r.source.includes('api') && r.destination === '/api'));
+  ok('api/index.js exports the express app',
+    fs.readFileSync(path.join(ROOT, 'api/index.js'), 'utf8').includes("require('../server')"));
+  const serverSrc = fs.readFileSync(path.join(ROOT, 'server.js'), 'utf8');
+  ok('server.js writes no files (stateless deploy)',
+    !/writeFile|appendFile|createWriteStream|new DatabaseSync/.test(serverSrc));
+  ok('server.js listens only when run directly',
+    /require\.main === module[\s\S]{0,80}app\.listen/.test(serverSrc));
+  ok('db init is scoped to /api so pages survive a db outage',
+    /app\.use\('\/api',[\s\S]{0,200}init\(\)/.test(serverSrc));
+
   console.log(`\n===== ${pass} passed, ${fail} failed =====`);
   process.exit(fail ? 1 : 0);
 })();
